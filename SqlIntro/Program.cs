@@ -21,7 +21,7 @@ namespace SqlIntro
 
             foreach (var prod in repo.GetProducts())
             {
-                Console.WriteLine("Product Name:" + prod.Name);
+                Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
             }
 
             Console.WriteLine("Press Return to Exit");
