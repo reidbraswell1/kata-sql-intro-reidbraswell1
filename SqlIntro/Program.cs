@@ -10,10 +10,16 @@ namespace SqlIntro
             var database = "adventureworks";
             var userId = "";
             var password = "";
-            Console.WriteLine("Enter Your UserId");
-            userId = Console.ReadLine();
-            Console.WriteLine("Enter Your Password To Database");
-            password = Console.ReadLine();
+
+            do
+            {
+                Console.WriteLine("Enter Your UserId");
+            } while (String.IsNullOrEmpty(userId = Console.ReadLine()));
+
+            do
+            {
+                Console.WriteLine("Enter Your Password To Database");
+            } while (String.IsNullOrEmpty(password = Console.ReadLine()));
 
             //get connectionString format from connectionstrings.com and change to match your database
             var connectionString = $"Server={server};Database={database};Uid={userId};Pwd={password};";
@@ -23,20 +29,23 @@ namespace SqlIntro
             {
                 Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
             }
-            Console.WriteLine("Enter A Product ID to Delete");
-            var id = Int32.Parse(Console.ReadLine().ToString());
-            if(repo.DeleteProduct(id))
+
+            var id = 0;
+            do
             {
-                Console.WriteLine($"Product ID {id} was deleted from the database");
-            }
-            else
-            {
-                Console.WriteLine($"Product ID {id} was not deleted from the database");
-            }
+                Console.WriteLine("Enter A Product ID to Delete");
+                Int32.TryParse(Console.ReadLine().ToString(), out id);
+            } while (id == 0);
+
+            var deleteResult = "";
+            deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} was deleted from the database" :
+                                                      $"Product ID {id} was not deleted from the database";
+            Console.WriteLine(deleteResult);
+
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
         }
 
-       
+
     }
 }
