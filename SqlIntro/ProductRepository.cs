@@ -29,7 +29,7 @@ namespace SqlIntro
                 conn.Open();
                 var cmd = conn.CreateCommand();
                 //TODO:  Write a SELECT statement that gets all products  
-                cmd.CommandText = "SELECT * FROM product;";
+                cmd.CommandText = $"SELECT * FROM product;";
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
@@ -43,14 +43,29 @@ namespace SqlIntro
         /// Deletes a Product from the database
         /// </summary>
         /// <param name="id"></param>
-        public void DeleteProduct(int id)
+        public bool DeleteProduct(int id)
         {
+            var result = false;
             using (var conn = new MySqlConnection(_connectionString))
             {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = ""; //Write a delete statement that deletes by id
-                cmd.ExecuteNonQuery();
+                try
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    //Write a delete statement that deletes by id
+                    cmd.CommandText = $"DELETE FROM product WHERE product.ProductID = {id};";
+                    if(cmd.ExecuteNonQuery() > 0)
+                    {
+                        result = true; 
+                    }
+                    conn.Close();
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);   
+                }
             }
+            return result;
         }
         /// <summary>
         /// Updates the Product in the database
