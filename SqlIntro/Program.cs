@@ -23,7 +23,16 @@ namespace SqlIntro
             {
                 Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
             }
-
+            Console.WriteLine("Enter A Product ID to Delete");
+            var id = Int32.Parse(Console.ReadLine().ToString());
+            if(repo.DeleteProduct(id))
+            {
+                Console.WriteLine($"Product ID {id} was deleted from the database");
+            }
+            else
+            {
+                Console.WriteLine($"Product ID {id} was not deleted from the database");
+            }
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
         }
