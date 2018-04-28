@@ -24,15 +24,18 @@ namespace SqlIntro
         /// <returns></returns>
         public IEnumerable<Product> GetProducts()
         {
-            using (var conn = new MySqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString.ToString()))
             {
+                conn.Open();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = ""; //TODO:  Write a SELECT statement that gets all products
+                //TODO:  Write a SELECT statement that gets all products  
+                cmd.CommandText = "SELECT * FROM product;";
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
                     yield return new Product { Name = dr["Name"].ToString() };
                 }
+                conn.Close();
             }
         }
 
