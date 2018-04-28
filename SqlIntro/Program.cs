@@ -42,10 +42,33 @@ namespace SqlIntro
                                                       $"Product ID {id} was not deleted from the database";
             Console.WriteLine(deleteResult);
 
+            do
+            {
+                do
+                {
+                    Console.WriteLine("Enter A Product ID to Update");
+                    Int32.TryParse(Console.ReadLine().ToString(), out id);
+                } while (id == 0);
+                var prod = repo.GetProduct(id);
+                if (prod.Id < 0)
+                {
+                    Console.WriteLine($"Product Not Found {id}");
+                    id = -1;
+                }
+                else
+                {
+                    Console.WriteLine($"Updating Product {prod.Id} {prod.Name}");
+                    do
+                    {
+                        Console.WriteLine("Enter New Product Name");
+                        prod.Name = Console.ReadLine().ToString();
+                    } while (String.IsNullOrEmpty(prod.Name));
+                    repo.UpdateProduct(prod);
+                }
+            } while (id < 0);
+
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
         }
-
-
     }
 }
