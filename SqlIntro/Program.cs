@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace SqlIntro
 {
@@ -36,13 +38,16 @@ namespace SqlIntro
             var id = 0;
             do
             {
+                FieldInfo fi = crud.GetType().GetField(crud.ToString());
+                DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                var enumDesc = (attributes.Length > 0) ? attributes[0].Description : crud.ToString();
                 switch (crud)
                 {
                     case Crud.Delete:
-                        Console.WriteLine("Enter A Product ID to Delete");
+                        Console.WriteLine($"Enter A Product ID to {enumDesc} -- A number between 1 and {int.MaxValue}");
                         break;
                     case Crud.Update:
-                        Console.WriteLine("Enter A Product ID to Update");
+                        Console.WriteLine($"Enter A Product ID to Update -- A number between 1 and {int.MaxValue}");
                         break;
                 }
                 Int32.TryParse(Console.ReadLine().ToString(), out id);
@@ -93,7 +98,7 @@ namespace SqlIntro
                 Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
             }
 
-            deleteProduct(promptProductId(Crud.Delete),repo);
+            deleteProduct(promptProductId(Crud.Delete), repo);
 
             updateProduct(promptProductId(Crud.Update), promptProductName(), repo);
 
