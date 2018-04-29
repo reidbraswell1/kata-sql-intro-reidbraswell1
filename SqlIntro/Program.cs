@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace SqlIntro
 {
@@ -38,9 +36,7 @@ namespace SqlIntro
             var id = 0;
             do
             {
-                FieldInfo fi = crud.GetType().GetField(crud.ToString());
-                DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                var enumDesc = (attributes.Length > 0) ? attributes[0].Description : crud.ToString();
+                var enumDesc = CrudMethods.getEnumDescription(crud);
                 switch (crud)
                 {
                     case Crud.Delete:
