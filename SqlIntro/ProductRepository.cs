@@ -9,7 +9,7 @@ using MySql.Data.MySqlClient;
 
 namespace SqlIntro
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly string _connectionString;
 
@@ -119,10 +119,7 @@ namespace SqlIntro
                     cmd.CommandText = "UPDATE product SET name = @name WHERE ProductId = @id";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
                     cmd.Parameters.AddWithValue("@id", prod.Id);
-                    if (cmd.ExecuteNonQuery() > 0)
-                    {
-                        result = true;
-                    }
+                    result = (cmd.ExecuteNonQuery() > 0) ? true : false;
                 }
                 catch (Exception e)
                 {
@@ -136,14 +133,25 @@ namespace SqlIntro
         /// Inserts a new Product into the database
         /// </summary>
         /// <param name="prod"></param>
-        public void InsertProduct(Product prod)
+        public bool InsertProduct(Product prod)
         {
             using (var conn = new MySqlConnection(_connectionString))
             {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = "INSERT into product (name) values(@name)";
-                cmd.Parameters.AddWithValue("@name", prod.Name);
-                cmd.ExecuteNonQuery();
+                var result = false;
+                try
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = "INSERT into product (name) values(@name)";
+                    cmd.Parameters.AddWithValue("@name", prod.Name);
+                    result = (cmd.ExecuteNonQuery() > 0) ? true : false;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                conn.Close();
+                return result;
             }
         }
     }
