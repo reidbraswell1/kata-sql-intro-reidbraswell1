@@ -1,4 +1,5 @@
-﻿namespace SqlIntro
+﻿using System.ComponentModel;
+namespace SqlIntro
 {
     public class Product
     {
@@ -8,9 +9,13 @@
     }
     public enum Crud
     {
+        [Description("INSERT")]
         Create,
+        [Description("SELECT")]
         Read,
+        [Description("UPDATE")]
         Update,
-        Delete
+        [Description("DELETE")]
+        Delet
     }
 }
