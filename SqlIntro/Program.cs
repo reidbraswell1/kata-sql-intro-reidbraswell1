@@ -13,7 +13,7 @@ namespace SqlIntro
             } while (String.IsNullOrEmpty(userId = Console.ReadLine()));
             return userId;
         }
-        private static string promptPassword()
+        private static string PromptPassword()
         {
             var password = "";
             do
@@ -22,81 +22,86 @@ namespace SqlIntro
             } while (String.IsNullOrEmpty(password = Console.ReadLine()));
             return password;
         }
-        private static string promptProductName()
+        private static string PromptProductName(Crud crud)
         {
             var name = "";
+            var enumDesc = CrudMethods.getEnumDescription(crud);
             do
             {
-                Console.WriteLine("Enter Product Name");
+                Console.WriteLine($"Enter Product Name To {enumDesc}");
             } while (String.IsNullOrEmpty(name = Console.ReadLine()));
             return name;
         }
-        private static int promptProductId(Crud crud)
+        private static int PromptProductId(Crud crud)
         {
             var id = 0;
             do
             {
                 var enumDesc = CrudMethods.getEnumDescription(crud);
-                switch (crud)
-                {
-                    case Crud.Delete:
-                        Console.WriteLine($"Enter A Product ID to {enumDesc} -- A number between 1 and {int.MaxValue}");
-                        break;
-                    case Crud.Update:
-                        Console.WriteLine($"Enter A Product ID to Update -- A number between 1 and {int.MaxValue}");
-                        break;
-                }
+                Console.WriteLine($"Enter A Product ID to {enumDesc} -- A number between 1 and {int.MaxValue}");
                 Int32.TryParse(Console.ReadLine().ToString(), out id);
             } while (id == 0);
             return id;
         }
-        private static void deleteProduct(int id, ProductRepository repo)
+        private static void DisplayAllProducts(ProductRepository repo)
         {
-            var deleteResult = "";
-            deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} was deleted from the database" :
-                                                      $"Product ID {id} was not deleted from the database";
+            foreach (var prod in repo.GetProducts())
+            {
+                Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
+            }
+        }
+        private static void DeleteProduct(int id, ProductRepository repo)
+        {
+            var deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} Was Deleted From The Database" :
+                                                          $"Product ID {id} Not Found Not Deleted From The Database";
             Console.WriteLine(deleteResult);
         }
-        private static void updateProduct(int id, string name, ProductRepository repo)
+        private static void UpdateProduct(int id, string name, ProductRepository repo)
         {
             var prod = repo.GetProduct(id);
             if (prod.Id < 0)
             {
-                Console.WriteLine($"Product Not Updated Id Not Found {id}");
+                Console.WriteLine($"Product Not Updated Id {id} Not Found");
             }
             else
             {
                 Console.WriteLine($"Updating Product {prod.Id} {prod.Name}");
                 prod.Name = name;
-                if (repo.UpdateProduct(prod))
-                {
-                    Console.WriteLine($"Product {id} Was Successfully Updated");
-                }
-                else
-                {
-                    Console.WriteLine($"Product {id} Was Not Updated");
-                }
+                var updateResult = (repo.UpdateProduct(prod)) ? ($"Product ID {id} Was Successfully Updated") :
+                                                                ($"Product ID {id} Not Updated");
+                Console.WriteLine(updateResult);
             }
+        }
+        private static void InsertProduct(string name, ProductRepository repo)
+        {
+            Product prod = new Product() { Id = 0, Name = name };
+            Console.WriteLine($"Adding Product {name} To The Database");
+            var addResult = (repo.InsertProduct(prod)) ? $"Product {name} Was Inserted Into The Database" :
+                                                         $"Product {name} Was Not Inserted Into The Database";
+            Console.WriteLine(addResult);
         }
         static void Main(string[] args)
         {
             var server = "aws-maria-db.cliyienc3i9k.us-east-2.rds.amazonaws.com";
             var database = "adventureworks";
             var userId = promptUserId();
-            var password = promptPassword();
+            var password = PromptPassword();
 
             //get connectionString format from connectionstrings.com and change to match your database
             var connectionString = $"Server={server};Database={database};Uid={userId};Pwd={password};";
             var repo = new ProductRepository(connectionString);
 
-            foreach (var prod in repo.GetProducts())
-            {
-                Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
-            }
+            Console.WriteLine("\n***READ ALL PRODUCTS TEST***");
+            DisplayAllProducts(repo);
 
-            deleteProduct(promptProductId(Crud.Delete), repo);
+            Console.WriteLine("\n***DELETE PRODUCT TEST***");
+            DeleteProduct(PromptProductId(Crud.Delete), repo);
 
-            updateProduct(promptProductId(Crud.Update), promptProductName(), repo);
+            Console.WriteLine("\n***UPDATE PRODUCT TEST***");
+            UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo);
+
+            Console.WriteLine("\n***INSERT PRODUCT TEST***");
+            InsertProduct(PromptProductName(Crud.Create), repo);
 
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
