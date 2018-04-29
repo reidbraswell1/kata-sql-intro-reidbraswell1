@@ -44,6 +44,8 @@ namespace SqlIntro
         /// <param name="id"></param>
         public Product GetProduct(int id)
         {
+            Product prod;
+
             using (var conn = new MySqlConnection(_connectionString))
             {
                 try
@@ -62,8 +64,10 @@ namespace SqlIntro
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    return new Product { Id = -1, Name = "" };
+                    prod = new Product { Id = -1, Name = "" };
                 }
+                conn.Close();
+                return prod;
             }
         }
 
@@ -93,6 +97,7 @@ namespace SqlIntro
                 {
                     Console.WriteLine(e);
                 }
+                conn.Close();
             }
             return result;
         }
@@ -111,7 +116,7 @@ namespace SqlIntro
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = "UPDATE product SET name = @name WHERE id = @id";
+                    cmd.CommandText = "UPDATE product SET name = @name WHERE ProductId = @id";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
                     cmd.Parameters.AddWithValue("@id", prod.Id);
                     if (cmd.ExecuteNonQuery() > 0)
@@ -123,6 +128,7 @@ namespace SqlIntro
                 {
                     Console.WriteLine(e);
                 }
+                conn.Close();
             }
             return result;
         }
