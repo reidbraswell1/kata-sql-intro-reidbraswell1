@@ -17,7 +17,6 @@ namespace SqlIntro
         {
             _connectionString = connectionString;
         }
-
         /// <summary>
         /// Reads all the products from the products table
         /// </summary>
@@ -26,16 +25,28 @@ namespace SqlIntro
         {
             using (var conn = new MySqlConnection(_connectionString.ToString()))
             {
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                //TODO:  Write a SELECT statement that gets all products  
-                cmd.CommandText = $"SELECT * FROM product;";
-                var dr = cmd.ExecuteReader();
-                while (dr.Read())
+                var products = new List<Product>();
+                try
                 {
-                    yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    // Write a SELECT statement that gets all products  
+                    cmd.CommandText = "SELECT Id, Name FROM product;";
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        // cant yield in a try catch but want to catch 
+                        // exception so use list.
+                        //yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        products.Add(new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
+                    }
+                    conn.Close();
                 }
-                conn.Close();
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                return products;
             }
         }
         /// <summary>
@@ -52,11 +63,12 @@ namespace SqlIntro
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"SELECT ProductID, Name FROM product WHERE ProductId = {id};";
+                    cmd.CommandText = "SELECT ID, Name FROM product WHERE Id = @id;";
+                    cmd.Parameters.AddWithValue("@id", id);
                     var dr = cmd.ExecuteReader();
                     if (dr.Read())
                     {
-                        return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        return new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() };
                     }
                     conn.Close();
                     return new Product { Id = -1, Name = "" };
@@ -70,7 +82,6 @@ namespace SqlIntro
                 return prod;
             }
         }
-
 
         /// <summary>
         /// Deletes a Product from the database
@@ -86,7 +97,8 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     //Write a delete statement that deletes by id
-                    cmd.CommandText = $"DELETE FROM product WHERE product.ProductID = {id};";
+                    cmd.CommandText = $"DELETE FROM product WHERE product.ID = @id;";
+                    cmd.Parameters.AddWithValue("@id", id);
                     if (cmd.ExecuteNonQuery() > 0)
                     {
                         result = true;
@@ -101,10 +113,12 @@ namespace SqlIntro
             }
             return result;
         }
+
         /// <summary>
         /// Updates the Product in the database
         /// </summary>
         /// <param name="prod"></param>
+        /// <returns></returns>
         public bool UpdateProduct(Product prod)
         {
             //This is annoying and unnecessarily tedious for large objects.
@@ -116,7 +130,7 @@ namespace SqlIntro
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = "UPDATE product SET name = @name WHERE ProductId = @id";
+                    cmd.CommandText = "UPDATE product SET name = @name WHERE Id = @id";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
                     cmd.Parameters.AddWithValue("@id", prod.Id);
                     result = (cmd.ExecuteNonQuery() > 0) ? true : false;
@@ -129,10 +143,12 @@ namespace SqlIntro
             }
             return result;
         }
+
         /// <summary>
         /// Inserts a new Product into the database
         /// </summary>
         /// <param name="prod"></param>
+        /// <returns></returns>
         public bool InsertProduct(Product prod)
         {
             using (var conn = new MySqlConnection(_connectionString))
