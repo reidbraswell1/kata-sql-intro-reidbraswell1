@@ -17,37 +17,37 @@ namespace SqlIntro
         {
             _connectionString = connectionString;
         }
+
         /// <summary>
         /// Reads all the products from the products table
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Product> GetProducts()
         {
-            using (var conn = new MySqlConnection(_connectionString.ToString()))
+            var products = new List<Product>();
+            try
             {
-                var products = new List<Product>();
-                try
+                using (var conn = new MySqlConnection(_connectionString.ToString()))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     // Write a SELECT statement that gets all products  
-                    cmd.CommandText = "SELECT Id, Name FROM product;";
+                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product;";
                     var dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
                         // cant yield in a try catch but want to catch 
                         // exception so use list.
-                        //yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
                         products.Add(new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
                     }
-                    conn.Close();
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                return products;
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return products;
         }
         /// <summary>
         /// Deletes a Product from the database
@@ -63,7 +63,7 @@ namespace SqlIntro
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = "SELECT ID, Name FROM product WHERE Id = @id;";
+                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product WHERE ProductID = @id;";
                     cmd.Parameters.AddWithValue("@id", id);
                     var dr = cmd.ExecuteReader();
                     if (dr.Read())
@@ -97,7 +97,7 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     //Write a delete statement that deletes by id
-                    cmd.CommandText = $"DELETE FROM product WHERE product.ID = @id;";
+                    cmd.CommandText = $"DELETE FROM product WHERE product.ProductId = @id;";
                     cmd.Parameters.AddWithValue("@id", id);
                     if (cmd.ExecuteNonQuery() > 0)
                     {
@@ -130,7 +130,7 @@ namespace SqlIntro
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = "UPDATE product SET name = @name WHERE Id = @id";
+                    cmd.CommandText = "UPDATE product SET name = @name WHERE ProductId = @id";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
                     cmd.Parameters.AddWithValue("@id", prod.Id);
                     result = (cmd.ExecuteNonQuery() > 0) ? true : false;
