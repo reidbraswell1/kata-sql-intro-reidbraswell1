@@ -50,13 +50,13 @@ namespace SqlIntro
                 Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
             }
         }
-        private static void DeleteProduct(int id, ProductRepository repo)
+        private static void DeleteProduct(int id, IProductRepository repo)
         {
             var deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} Was Deleted From The Database" :
                                                           $"Product ID {id} Not Found Not Deleted From The Database";
             Console.WriteLine(deleteResult);
         }
-        private static void UpdateProduct(int id, string name, ProductRepository repo)
+        private static void UpdateProduct(int id, string name, IProductRepository repo)
         {
             var prod = repo.GetProduct(id);
             if (prod.Id < 0)
@@ -72,7 +72,7 @@ namespace SqlIntro
                 Console.WriteLine(updateResult);
             }
         }
-        private static void InsertProduct(string name, ProductRepository repo)
+        private static void InsertProduct(string name, IProductRepository repo)
         {
             Product prod = new Product() { Id = 0, Name = name };
             Console.WriteLine($"Adding Product {name} To The Database");
@@ -92,21 +92,28 @@ namespace SqlIntro
             var repo1 = new ProductRepository(connectionString);
             var repo2 = new DapperProductRepository(connectionString);
 
-            Console.WriteLine("\n***READ ALL PRODUCTS TEST PRODUCT REPOSITORY***");
+            Console.WriteLine("\n***READ ALL PRODUCTS TEST - PRODUCT REPOSITORY***");
             DisplayAllProducts(repo1);
             Console.WriteLine("\nPress Return For Dapper Test");
             Console.ReadLine();
-            Console.WriteLine("\n***READ ALL PRODUCTS TEST DAPPER PRODUCT REPOSITORY***");
+            Console.WriteLine("\n***READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY***");
             DisplayAllProducts(repo2);
 
-            Console.WriteLine("\n***DELETE PRODUCT TEST***");
+            Console.WriteLine("\n***DELETE PRODUCT TEST SQL ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo1);
+            Console.WriteLine("\n***DELETE PRODUCT TEST DAPPER ***");
+            DeleteProduct(PromptProductId(Crud.Delete), repo2);
 
-            Console.WriteLine("\n***UPDATE PRODUCT TEST***");
+
+            Console.WriteLine("\n***UPDATE PRODUCT TEST SQL ***");
             UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo1);
+            Console.WriteLine("\n***UPDATE PRODUCT TEST DAPPER ***");
+            UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo2);
 
             Console.WriteLine("\n***INSERT PRODUCT TEST***");
             InsertProduct(PromptProductName(Crud.Create), repo1);
+            Console.WriteLine("\n***INSERT PRODUCT TEST DAPPER ***");
+            InsertProduct(PromptProductName(Crud.Create), repo2);
 
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
