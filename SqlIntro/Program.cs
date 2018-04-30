@@ -92,27 +92,27 @@ namespace SqlIntro
             var repo1 = new ProductRepository(connectionString);
             var repo2 = new DapperProductRepository(connectionString);
 
-            Console.WriteLine("\n***READ ALL PRODUCTS TEST - PRODUCT REPOSITORY***");
+            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - PRODUCT REPOSITORY ***");
             DisplayAllProducts(repo1);
             Console.WriteLine("\nPress Return For Dapper Test");
             Console.ReadLine();
-            Console.WriteLine("\n***READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY***");
+            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY ***");
             DisplayAllProducts(repo2);
 
-            Console.WriteLine("\n***DELETE PRODUCT TEST SQL ***");
+            Console.WriteLine("\n*** DELETE PRODUCT TEST SQL ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo1);
-            Console.WriteLine("\n***DELETE PRODUCT TEST DAPPER ***");
+            Console.WriteLine("\n*** DELETE PRODUCT TEST DAPPER ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo2);
 
 
-            Console.WriteLine("\n***UPDATE PRODUCT TEST SQL ***");
+            Console.WriteLine("\n*** UPDATE PRODUCT TEST SQL ***");
             UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo1);
-            Console.WriteLine("\n***UPDATE PRODUCT TEST DAPPER ***");
+            Console.WriteLine("\n*** UPDATE PRODUCT TEST DAPPER ***");
             UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo2);
 
-            Console.WriteLine("\n***INSERT PRODUCT TEST***");
+            Console.WriteLine("\n*** INSERT PRODUCT TEST SQL ***");
             InsertProduct(PromptProductName(Crud.Create), repo1);
-            Console.WriteLine("\n***INSERT PRODUCT TEST DAPPER ***");
+            Console.WriteLine("\n*** INSERT PRODUCT TEST DAPPER ***");
             InsertProduct(PromptProductName(Crud.Create), repo2);
 
             Console.WriteLine("Press Return to Exit");
