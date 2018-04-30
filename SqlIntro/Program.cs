@@ -43,7 +43,7 @@ namespace SqlIntro
             } while (id == 0);
             return id;
         }
-        private static void DisplayAllProducts(ProductRepository repo)
+        private static void DisplayAllProducts(IProductRepository repo)
         {
             foreach (var prod in repo.GetProducts())
             {
@@ -89,19 +89,24 @@ namespace SqlIntro
 
             //get connectionString format from connectionstrings.com and change to match your database
             var connectionString = $"Server={server};Database={database};Uid={userId};Pwd={password};";
-            var repo = new ProductRepository(connectionString);
+            var repo1 = new ProductRepository(connectionString);
+            var repo2 = new DapperProductRepository(connectionString);
 
-            Console.WriteLine("\n***READ ALL PRODUCTS TEST***");
-            DisplayAllProducts(repo);
+            Console.WriteLine("\n***READ ALL PRODUCTS TEST PRODUCT REPOSITORY***");
+            DisplayAllProducts(repo1);
+            Console.WriteLine("\nPress Return For Dapper Test");
+            Console.ReadLine();
+            Console.WriteLine("\n***READ ALL PRODUCTS TEST DAPPER PRODUCT REPOSITORY***");
+            DisplayAllProducts(repo2);
 
             Console.WriteLine("\n***DELETE PRODUCT TEST***");
-            DeleteProduct(PromptProductId(Crud.Delete), repo);
+            DeleteProduct(PromptProductId(Crud.Delete), repo1);
 
             Console.WriteLine("\n***UPDATE PRODUCT TEST***");
-            UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo);
+            UpdateProduct(PromptProductId(Crud.Update), PromptProductName(Crud.Update), repo1);
 
             Console.WriteLine("\n***INSERT PRODUCT TEST***");
-            InsertProduct(PromptProductName(Crud.Create), repo);
+            InsertProduct(PromptProductName(Crud.Create), repo1);
 
             Console.WriteLine("Press Return to Exit");
             Console.ReadLine();
