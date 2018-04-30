@@ -82,6 +82,14 @@ namespace SqlIntro
                 return prod;
             }
         }
+        public IEnumerable<Product> GetProductsWithReview()
+        {
+            return null;
+        }
+        public IEnumerable<Product> GetProductsAndReviews()
+        {
+            return null;
+        }
 
         /// <summary>
         /// Deletes a Product from the database

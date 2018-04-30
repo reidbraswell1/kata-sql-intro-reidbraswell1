@@ -9,6 +9,8 @@ namespace SqlIntro
         bool DeleteProduct(int id);
         bool UpdateProduct(Product prod);
         bool InsertProduct(Product prod);
+        IEnumerable<Product>GetProductsWithReview();
+        IEnumerable<Product>GetProductsAndReviews();
 
     }
 }
