@@ -105,7 +105,7 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     // Write a SELECT statement that gets all products  
-                    cmd.CommandText = "SELECT product.ProductID AS ID, product.Name, productreview.Comments FROM product INNER JOIN productreview ON product.ProductID = productreview.ProductID;";
+                    cmd.CommandText = "SELECT A.ProductID AS ID, A.Name, B.Comments FROM product AS A INNER JOIN productreview AS B ON A.ProductID = B.ProductID;";
                     var dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
@@ -141,7 +141,7 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     // Write a SELECT statement that gets all products  
-                    cmd.CommandText = "SELECT product.ProductID AS ID, product.Name, productreview.Comments FROM product LEFT JOIN productreview ON product.ProductID = productreview.ProductID;";
+                    cmd.CommandText = "SELECT A.ProductID AS ID, A.Name, B.Comments FROM product AS A LEFT JOIN productreview AS B ON A.ProductID = B.ProductID;";
                     var dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
