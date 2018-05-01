@@ -141,7 +141,7 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     // Write a SELECT statement that gets all products  
-                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product;";
+                    cmd.CommandText = "SELECT product.ProductID AS ID, product.Name, productreview.Comments FROM product LEFT JOIN productreview ON product.ProductID = productreview.ProductID;";
                     var dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
@@ -151,7 +151,7 @@ namespace SqlIntro
                         var productsAndReviews = new ProductsAndReviews();
                         productsAndReviews.Id = Int32.Parse(dr["ID"].ToString());
                         productsAndReviews.Name = dr["Name"].ToString();
-                        productsAndReviews.Comments = (dr.IsDBNull(3)) ? "" : dr["Comments"].ToString();
+                        productsAndReviews.Comments = (dr.IsDBNull(2)) ? "" : dr["Comments"].ToString();
                         products.Add(productsAndReviews);
                         //products.Add(new ProductsAndReviews { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
                     }
