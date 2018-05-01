@@ -55,7 +55,7 @@ namespace SqlIntro
             foreach (var prod in repo.GetProductsWithReview())
             {
                 if (string.IsNullOrEmpty(prod.Comments))
-                {
+               {
                     Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name + "\tProduct Review:" + prod.Comments);
                 }
                 else
