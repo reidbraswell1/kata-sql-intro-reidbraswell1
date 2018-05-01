@@ -4,13 +4,13 @@ namespace SqlIntro
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetProducts();
+        IEnumerable<Product> GetProducts(int id);
         Product GetProduct(int id);
         bool DeleteProduct(int id);
         bool UpdateProduct(Product prod);
         bool InsertProduct(Product prod);
-        IEnumerable<Product>GetProductsWithReview();
-        IEnumerable<Product>GetProductsAndReviews();
+        IEnumerable<ProductsAndReviews>GetProductsWithReview();
+        IEnumerable<ProductsAndReviews>GetProductsAndReviews();
 
     }
 }

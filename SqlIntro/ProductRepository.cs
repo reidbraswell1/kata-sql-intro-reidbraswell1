@@ -22,7 +22,7 @@ namespace SqlIntro
         /// Reads all the products from the products table
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Product> GetProducts()
+        public IEnumerable<Product> GetProducts(int id)
         {
             var products = new List<Product>();
             try
@@ -32,7 +32,11 @@ namespace SqlIntro
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     // Write a SELECT statement that gets all products  
-                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product;";
+                    cmd.CommandText = (id > 0) ? "SELECT ProductID AS ID, Name FROM product WHERE ProductId > @id1 AND ProductId < @id2" :
+                                                 "SELECT ProductID AS ID, Name FROM product;";
+                    cmd.Parameters.AddWithValue("@id1", id - 15);
+                    cmd.Parameters.AddWithValue("@id2", id + 15);
+
                     var dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
@@ -82,13 +86,82 @@ namespace SqlIntro
                 return prod;
             }
         }
-        public IEnumerable<Product> GetProductsWithReview()
+        public IEnumerable<ProductsAndReviews> GetProductsWithReview()
         {
-            return null;
+            /* 
+              USE adventureworks;
+              SELECT product.ProductID, 
+                     product.Name,
+                     productreview.Comments
+              FROM product
+              INNER JOIN productreview
+              ON product.ProductID = productreview.ProductID;
+            */
+            var products = new List<ProductsAndReviews>();
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    // Write a SELECT statement that gets all products  
+                    cmd.CommandText = "SELECT product.ProductID AS ID, product.Name, productreview.Comments FROM product INNER JOIN productreview ON product.ProductID = productreview.ProductID;";
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        // cant yield in a try catch but want to catch 
+                        // exception so use list.
+                        // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        products.Add(new ProductsAndReviews { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString(), Comments = dr["Comments"].ToString() });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return products;
         }
-        public IEnumerable<Product> GetProductsAndReviews()
+        public IEnumerable<ProductsAndReviews> GetProductsAndReviews()
         {
-            return null;
+            /*
+              USE adventureworks;
+              SELECT product.ProductID,
+                     product.Name,
+                     productreview.Comments
+              FROM product
+              LEFT JOIN productreview
+              ON product.ProductID = productreview.ProductID;
+            */
+            var products = new List<ProductsAndReviews>();
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    // Write a SELECT statement that gets all products  
+                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product;";
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        // cant yield in a try catch but want to catch 
+                        // exception so use list.
+                        // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        var productsAndReviews = new ProductsAndReviews();
+                        productsAndReviews.Id = Int32.Parse(dr["ID"].ToString());
+                        productsAndReviews.Name = dr["Name"].ToString();
+                        productsAndReviews.Comments = (dr.IsDBNull(3)) ? "" : dr["Comments"].ToString();
+                        products.Add(productsAndReviews);
+                        //products.Add(new ProductsAndReviews { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return products;
         }
 
         /// <summary>

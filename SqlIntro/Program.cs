@@ -43,18 +43,34 @@ namespace SqlIntro
             } while (id == 0);
             return id;
         }
-        private static void DisplayAllProducts(IProductRepository repo)
+        private static void DisplayAllProducts(IProductRepository repo, int id)
         {
-            foreach (var prod in repo.GetProducts())
+            foreach (var prod in repo.GetProducts(id))
             {
-                Console.WriteLine("Product ID:" + prod.Id + " Product Name:" + prod.Name);
+                Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name);
             }
         }
+        private static void DisplayAllProductsWithReviews(IProductRepository repo)
+        {
+            foreach (var prod in repo.GetProductsWithReview())
+            {
+                if (string.IsNullOrEmpty(prod.Comments))
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name + "\tProduct Review:" + prod.Comments);
+                }
+                else
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\nProduct Name:" + prod.Name + "\nProduct Review:" + prod.Comments + "\n");
+                }
+            }
+        }
+
         private static void DeleteProduct(int id, IProductRepository repo)
         {
             var deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} Was Deleted From The Database" :
                                                           $"Product ID {id} Not Found Not Deleted From The Database";
             Console.WriteLine(deleteResult);
+            DisplayAllProducts(repo,id);
         }
         private static void UpdateProduct(int id, string name, IProductRepository repo)
         {
@@ -92,12 +108,16 @@ namespace SqlIntro
             var repo1 = new ProductRepository(connectionString);
             var repo2 = new DapperProductRepository(connectionString);
 
-            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - PRODUCT REPOSITORY ***");
-            DisplayAllProducts(repo1);
-            Console.WriteLine("\nPress Return For Dapper Test");
+            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - PRODUCT REPOSITORY ***" + " Press Return");
             Console.ReadLine();
-            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY ***");
-            DisplayAllProducts(repo2);
+            DisplayAllProducts(repo1,0);
+            Console.WriteLine("\n*** READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY ***" + " Press Return");
+            Console.ReadLine();
+            DisplayAllProducts(repo2,0);
+
+            Console.WriteLine("\n*** READ ALL PRODUCTS WITH REVIEWS TEST SQL ***" + " Press Return");
+            Console.ReadLine();
+            DisplayAllProductsWithReviews(repo1);
 
             Console.WriteLine("\n*** DELETE PRODUCT TEST SQL ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo1);

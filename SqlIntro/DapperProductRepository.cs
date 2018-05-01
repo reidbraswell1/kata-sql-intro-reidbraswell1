@@ -17,7 +17,7 @@ namespace SqlIntro
         /// Reads all the products from the products table
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Product> GetProducts()
+        public IEnumerable<Product> GetProducts(int id)
         {
             var products = new List<Product>();
             try
@@ -58,11 +58,11 @@ namespace SqlIntro
             }
             return prod;
         }
-        public IEnumerable<Product> GetProductsWithReview()
+        public IEnumerable<ProductsAndReviews> GetProductsWithReview()
         {
             return null;
         }
-        public IEnumerable<Product> GetProductsAndReviews()
+        public IEnumerable<ProductsAndReviews> GetProductsAndReviews()
         {
             return null;
         }

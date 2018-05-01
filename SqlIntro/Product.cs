@@ -8,6 +8,12 @@ namespace SqlIntro
         public string Name { get; set; }
 
     }
+    public class ProductsAndReviews
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Comments { get; set; }
+    }
     public enum Crud
     {
         [Description("INSERT")]
