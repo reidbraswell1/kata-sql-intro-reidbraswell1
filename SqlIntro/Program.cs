@@ -55,7 +55,7 @@ namespace SqlIntro
             foreach (var prod in repo.GetProductsWithReview())
             {
                 if (string.IsNullOrEmpty(prod.Comments))
-               {
+                {
                     Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name + "\tProduct Review:" + prod.Comments);
                 }
                 else
@@ -92,7 +92,7 @@ namespace SqlIntro
             if (prod.Id < 0)
             {
                 Console.WriteLine($"Product Not Updated Id \'{id}\' Not Found");
-                DisplayAllProducts(repo,id);
+                DisplayAllProducts(repo, id);
             }
             else
             {
@@ -133,9 +133,15 @@ namespace SqlIntro
             Console.WriteLine("\n*** READ ALL PRODUCTS WITH REVIEWS TEST SQL ***" + " Press Return");
             Console.ReadLine();
             DisplayAllProductsWithReviews(repo1);
+            Console.WriteLine("\n*** READ ALL PRODUCTS WITH REVIEWS TEST DAPPER ***" + " Press Return");
+            Console.ReadLine();
+            DisplayAllProductsWithReviews(repo2);
             Console.WriteLine("\n*** READ ALL PRODUCTS AND REVIEWS TEST SQL ***" + " Press Return");
             Console.ReadLine();
             DisplayAllProductsAndReviews(repo1);
+            Console.WriteLine("\n*** READ ALL PRODUCTS AND REVIEWS TEST DAPPER ***" + " Press Return");
+            Console.ReadLine();
+            DisplayAllProductsAndReviews(repo2);
 
             Console.WriteLine("\n*** DELETE PRODUCT TEST SQL ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo1);
