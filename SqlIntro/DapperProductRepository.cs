@@ -24,9 +24,11 @@ namespace SqlIntro
             {
                 using (var conn = new MySqlConnection(_connectionString.ToString()))
                 {
-                    var sql = "SELECT ProductID AS Id, Name FROM product;";
+                    // var sql = "SELECT ProductID AS Id, Name FROM product;";
+                    var sql = (id > 0) ? "SELECT ProductID AS ID, Name FROM product WHERE ProductId > @ID1 AND ProductId < @ID2" :
+                                         "SELECT ProductID AS ID, Name FROM product;";
                     conn.Open();
-                    products = conn.Query<Product>(sql).ToList();
+                    products = conn.Query<Product>(sql,new { ID1 = id -15, ID2 = id + 15 }).ToList();
                 }
             }
             catch (Exception e)
