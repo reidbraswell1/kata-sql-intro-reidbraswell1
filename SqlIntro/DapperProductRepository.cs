@@ -62,11 +62,39 @@ namespace SqlIntro
         }
         public IEnumerable<ProductsAndReviews> GetProductsWithReview()
         {
-            return null;
+            var products = new List<ProductsAndReviews>();
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                {
+                    var sql = "SELECT A.ProductID AS ID, A.Name, B.Comments FROM product AS A INNER JOIN productreview AS B ON A.ProductID = B.ProductID;";
+                    conn.Open();
+                    products = conn.Query<ProductsAndReviews>(sql).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return products;
         }
         public IEnumerable<ProductsAndReviews> GetProductsAndReviews()
         {
-            return null;
+           var products = new List<ProductsAndReviews>();
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                {
+                    var sql = "SELECT A.ProductID AS ID, A.Name, B.Comments FROM product AS A LEFT JOIN productreview AS B ON A.ProductID = B.ProductID;";
+                    conn.Open();
+                    products = conn.Query<ProductsAndReviews>(sql).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return products;
         }
         public bool DeleteProduct(int id)
         {
