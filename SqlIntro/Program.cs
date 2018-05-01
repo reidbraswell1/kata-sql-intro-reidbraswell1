@@ -64,36 +64,51 @@ namespace SqlIntro
                 }
             }
         }
+        private static void DisplayAllProductsAndReviews(IProductRepository repo)
+        {
+            foreach (var prod in repo.GetProductsAndReviews())
+            {
+                if (string.IsNullOrEmpty(prod.Comments))
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name);
+                }
+                else
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\nProduct Name:" + prod.Name + "\nProduct Review:" + prod.Comments + "\n");
+                }
+            }
+        }
 
         private static void DeleteProduct(int id, IProductRepository repo)
         {
-            var deleteResult = (repo.DeleteProduct(id)) ? $"Product ID {id} Was Deleted From The Database" :
-                                                          $"Product ID {id} Not Found Not Deleted From The Database";
+            var deleteResult = (repo.DeleteProduct(id)) ? $"Product ID \'{id}\' Was Deleted From The Database" :
+                                                          $"Product ID \'{id}\' Not Found Not Deleted From The Database";
             Console.WriteLine(deleteResult);
-            DisplayAllProducts(repo,id);
+            DisplayAllProducts(repo, id);
         }
         private static void UpdateProduct(int id, string name, IProductRepository repo)
         {
             var prod = repo.GetProduct(id);
             if (prod.Id < 0)
             {
-                Console.WriteLine($"Product Not Updated Id {id} Not Found");
+                Console.WriteLine($"Product Not Updated Id \'{id}\' Not Found");
+                DisplayAllProducts(repo,id);
             }
             else
             {
-                Console.WriteLine($"Updating Product {prod.Id} {prod.Name}");
+                Console.WriteLine($"Updating Product \'{prod.Id}\' \'{prod.Name}\'");
                 prod.Name = name;
-                var updateResult = (repo.UpdateProduct(prod)) ? ($"Product ID {id} Was Successfully Updated") :
-                                                                ($"Product ID {id} Not Updated");
+                var updateResult = (repo.UpdateProduct(prod)) ? ($"Product ID \'{id}\' Was Successfully Updated") :
+                                                                ($"Product ID \'{id}\' Not Updated");
                 Console.WriteLine(updateResult);
             }
         }
         private static void InsertProduct(string name, IProductRepository repo)
         {
             Product prod = new Product() { Id = 0, Name = name };
-            Console.WriteLine($"Adding Product {name} To The Database");
-            var addResult = (repo.InsertProduct(prod)) ? $"Product {name} Was Inserted Into The Database" :
-                                                         $"Product {name} Was Not Inserted Into The Database";
+            Console.WriteLine($"Adding Product \'{name}\' To The Database");
+            var addResult = (repo.InsertProduct(prod)) ? $"Product \'{name}\' Was Inserted Into The Database" :
+                                                         $"Product \'{name}\' Was Not Inserted Into The Database";
             Console.WriteLine(addResult);
         }
         static void Main(string[] args)
@@ -110,14 +125,17 @@ namespace SqlIntro
 
             Console.WriteLine("\n*** READ ALL PRODUCTS TEST - PRODUCT REPOSITORY ***" + " Press Return");
             Console.ReadLine();
-            DisplayAllProducts(repo1,0);
+            DisplayAllProducts(repo1, 0);
             Console.WriteLine("\n*** READ ALL PRODUCTS TEST - DAPPER PRODUCT REPOSITORY ***" + " Press Return");
             Console.ReadLine();
-            DisplayAllProducts(repo2,0);
+            DisplayAllProducts(repo2, 0);
 
             Console.WriteLine("\n*** READ ALL PRODUCTS WITH REVIEWS TEST SQL ***" + " Press Return");
             Console.ReadLine();
             DisplayAllProductsWithReviews(repo1);
+            Console.WriteLine("\n*** READ ALL PRODUCTS AND REVIEWS TEST SQL ***" + " Press Return");
+            Console.ReadLine();
+            DisplayAllProductsAndReviews(repo1);
 
             Console.WriteLine("\n*** DELETE PRODUCT TEST SQL ***");
             DeleteProduct(PromptProductId(Crud.Delete), repo1);
@@ -135,7 +153,7 @@ namespace SqlIntro
             Console.WriteLine("\n*** INSERT PRODUCT TEST DAPPER ***");
             InsertProduct(PromptProductName(Crud.Create), repo2);
 
-            Console.WriteLine("Press Return to Exit");
+            Console.WriteLine("\nPress Return to Exit -- Tests Completed");
             Console.ReadLine();
         }
     }
