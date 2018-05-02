@@ -1,27 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 
 namespace SqlIntro
 {
     class Program
     {
-        private static string promptUserId()
-        {
-            var userId = "";
-            do
-            {
-                Console.WriteLine("Enter Your UserId");
-            } while (String.IsNullOrEmpty(userId = Console.ReadLine()));
-            return userId;
-        }
-        private static string PromptPassword()
-        {
-            var password = "";
-            do
-            {
-                Console.WriteLine("Enter Your Password To Database");
-            } while (String.IsNullOrEmpty(password = Console.ReadLine()));
-            return password;
-        }
         private static string PromptProductName(Crud crud)
         {
             var name = "";
@@ -113,13 +98,12 @@ namespace SqlIntro
         }
         static void Main(string[] args)
         {
-            var server = "aws-maria-db.cliyienc3i9k.us-east-2.rds.amazonaws.com";
-            var database = "adventureworks";
-            var userId = promptUserId();
-            var password = PromptPassword();
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.debug.json", optional: false, reloadOnChange: true);
 
-            //get connectionString format from connectionstrings.com and change to match your database
-            var connectionString = $"Server={server};Database={database};Uid={userId};Pwd={password};";
+            var config = configuration.Build();
+            var connectionString = config["connectionString"];
             var repo1 = new ProductRepository(connectionString);
             var repo2 = new DapperProductRepository(connectionString);
 
