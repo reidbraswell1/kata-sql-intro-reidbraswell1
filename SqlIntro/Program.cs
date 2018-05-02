@@ -30,9 +30,19 @@ namespace SqlIntro
         }
         private static void DisplayAllProducts(IProductRepository repo, int id)
         {
-            foreach (var prod in repo.GetProducts(id))
+            if (id > 0)
             {
-                Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name);
+                foreach (var prod in repo.GetProductsInRange(id))
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name);
+                }
+            }
+            else
+            {
+                foreach (var prod in repo.GetProducts())
+                {
+                    Console.WriteLine("Product ID:" + prod.Id + "\tProduct Name:" + prod.Name);
+                }
             }
         }
         private static void DisplayAllProductsWithReviews(IProductRepository repo)
