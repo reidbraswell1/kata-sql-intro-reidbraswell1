@@ -17,17 +17,47 @@ namespace SqlIntro
         {
             _connectionString = connectionString;
         }
-
-        /// <summary>
-        /// Reads all the products from the products table
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Product> GetProducts(int id)
+        public IEnumerable<Product> GetProducts()
         {
             var products = new List<Product>();
             try
             {
-                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                using (var conn = new MySqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    // Write a SELECT statement that gets all products  
+                    cmd.CommandText = "SELECT ProductID AS ID, Name FROM product;";
+
+                    var dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        // cant yield in a try catch but want to catch 
+                        // exception so use list.
+                        // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
+                        products.Add(new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
+                    }
+                    return products;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return products;
+            }
+        }
+
+        /// <summary>
+        /// Reads a range of products from the table
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IEnumerable<Product> GetProductsInRange(int id)
+        {
+            var products = new List<Product>();
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -45,25 +75,25 @@ namespace SqlIntro
                         // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
                         products.Add(new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
                     }
+                    return products;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                return products;
             }
-            return products;
         }
         /// <summary>
-        /// Deletes a Product from the database
+        /// Gets a product from the database by key
         /// </summary>
         /// <param name="id"></param>
         public Product GetProduct(int id)
         {
             Product prod;
-
-            using (var conn = new MySqlConnection(_connectionString))
+            try
             {
-                try
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -74,18 +104,21 @@ namespace SqlIntro
                     {
                         return new Product { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() };
                     }
-                    conn.Close();
-                    return new Product { Id = -1, Name = "" };
+                    return new Product { Id = -1 };
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    prod = new Product { Id = -1, Name = "" };
-                }
-                conn.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                prod = new Product { Id = -1 };
                 return prod;
             }
         }
+
+        /// <summary>
+        /// Gets Products with Reviews with an Inner Join
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<ProductsAndReviews> GetProductsWithReview()
         {
             /* 
@@ -100,7 +133,7 @@ namespace SqlIntro
             var products = new List<ProductsAndReviews>();
             try
             {
-                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -114,14 +147,20 @@ namespace SqlIntro
                         // yield return new Product { Id = Int32.Parse(dr["ProductID"].ToString()), Name = dr["Name"].ToString() };
                         products.Add(new ProductsAndReviews { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString(), Comments = dr["Comments"].ToString() });
                     }
+                    return products;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                return products;
             }
-            return products;
         }
+
+        /// <summary>
+        /// Gets Products and reviews from the table with a Left Join
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<ProductsAndReviews> GetProductsAndReviews()
         {
             /*
@@ -136,7 +175,7 @@ namespace SqlIntro
             var products = new List<ProductsAndReviews>();
             try
             {
-                using (var conn = new MySqlConnection(_connectionString.ToString()))
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -155,13 +194,14 @@ namespace SqlIntro
                         products.Add(productsAndReviews);
                         //products.Add(new ProductsAndReviews { Id = Int32.Parse(dr["ID"].ToString()), Name = dr["Name"].ToString() });
                     }
+                    return products;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                return products;
             }
-            return products;
         }
 
         /// <summary>
@@ -170,29 +210,23 @@ namespace SqlIntro
         /// <param name="id"></param>
         public bool DeleteProduct(int id)
         {
-            var result = false;
-            using (var conn = new MySqlConnection(_connectionString))
+            try
             {
-                try
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     //Write a delete statement that deletes by id
                     cmd.CommandText = $"DELETE FROM product WHERE product.ProductId = @id;";
                     cmd.Parameters.AddWithValue("@id", id);
-                    if (cmd.ExecuteNonQuery() > 0)
-                    {
-                        result = true;
-                    }
-                    conn.Close();
+                    return (cmd.ExecuteNonQuery() > 0) ? true : false;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                conn.Close();
             }
-            return result;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         /// <summary>
@@ -204,25 +238,23 @@ namespace SqlIntro
         {
             //This is annoying and unnecessarily tedious for large objects.
             //More on this in the future...  Nothing to do here..
-            var result = false;
-            using (var conn = new MySqlConnection(_connectionString))
+            try
             {
-                try
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     cmd.CommandText = "UPDATE product SET name = @name WHERE ProductId = @id";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
                     cmd.Parameters.AddWithValue("@id", prod.Id);
-                    result = (cmd.ExecuteNonQuery() > 0) ? true : false;
+                    return (cmd.ExecuteNonQuery() > 0) ? true : false;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                conn.Close();
             }
-            return result;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         /// <summary>
@@ -232,23 +264,21 @@ namespace SqlIntro
         /// <returns></returns>
         public bool InsertProduct(Product prod)
         {
-            using (var conn = new MySqlConnection(_connectionString))
+            try
             {
-                var result = false;
-                try
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     cmd.CommandText = "INSERT into product (name) values(@name)";
                     cmd.Parameters.AddWithValue("@name", prod.Name);
-                    result = (cmd.ExecuteNonQuery() > 0) ? true : false;
+                    return (cmd.ExecuteNonQuery() > 0) ? true : false;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                conn.Close();
-                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
             }
         }
     }
