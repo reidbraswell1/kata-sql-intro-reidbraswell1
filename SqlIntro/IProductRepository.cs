@@ -4,7 +4,8 @@ namespace SqlIntro
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetProducts(int id);
+        IEnumerable<Product> GetProducts();
+        IEnumerable<Product> GetProductsInRange(int i);
         Product GetProduct(int id);
         bool DeleteProduct(int id);
         bool UpdateProduct(Product prod);
